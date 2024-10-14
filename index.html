@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>To-Do List</title>
+<style>
+    #tasks {
+        margin-top: 20px;
+    }
+    .task-item {
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h1>Simple To-Do List</h1>
+
+<input type="text" id="new-task-input" placeholder="Enter new task...">
+<button onclick="addTask()">Add Task</button>
+
+<ul id="tasks"></ul>
+
+<script>
+// 获取DOM元素
+const tasksList = document.getElementById('tasks');
+const inputField = document.getElementById('new-task-input');
+
+// 从本地存储加载任务
+loadTasks();
+
+function loadTasks() {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasksList.innerHTML = '';
+    for(let i=0; i<savedTasks.length; i++) {
+        addListItem(savedTasks[i]);
+    }
+}
+
+function addTask() {
+    const taskName = inputField.value.trim();
+    if(taskName !== '') {
+        // 添加到本地存储
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        tasks.push(taskName);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        
+        // 添加到列表
+        addListItem(taskName);
+        
+        // 清空输入框
+        inputField.value = '';
+    } else {
+        alert("Please enter a valid task name.");
+    }
+}
+
+function addListItem(taskName) {
+    const li = document.createElement('li');
+    li.textContent = taskName;
+    li.className = 'task-item';
+    li.onclick = function() { removeTask(this); };
+    tasksList.appendChild(li);
+}
+
+function removeTask(item) {
+    item.remove(); // 从DOM中移除
+    let tasks = JSON.parse(localStorage.getItem('tasks'));
+    const index = Array.from(tasksList.children).indexOf(item);
+    tasks.splice(index, 1);
+    localStorage.setItem('tasks', JSON.stringify(tasks)); // 更新本地存储
+}
+</script>
+</body>
+</html>
